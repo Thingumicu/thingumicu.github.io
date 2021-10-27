@@ -1,2 +1,1 @@
 # thingumicu.github.io
-# smth
