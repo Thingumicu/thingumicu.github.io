@@ -1,0 +1,14 @@
+com\park\newparkinglot\common\UserDetails.class
+com\park\newparkinglot\servlet\Cars.class
+com\park\newparkinglot\servlet\Login.class
+com\park\newparkinglot\servlet\AddCar.class
+com\park\newparkinglot\servlet\EditCar.class
+com\park\newparkinglot\entity\Car.class
+com\park\newparkinglot\common\CarDetails.class
+com\park\newparkinglot\servlet\Users.class
+com\park\newparkinglot\JAXRSConfiguration.class
+com\park\newparkinglot\entity\User.class
+com\park\newparkinglot\servlet\Logout.class
+com\park\newparkinglot\resources\JavaEE8Resource.class
+com\newparkinglot\ejb\UserBean.class
+com\newparkinglot\ejb\CarBean.class
