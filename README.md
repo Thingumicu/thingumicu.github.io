@@ -9,3 +9,5 @@ https://github.com/Thingumicu/newparkinglot
 https://github.com/Thingumicu/nextgenpos
 # Tetris
 https://github.com/Thingumicu/Tetris
+
+# Zi faină
