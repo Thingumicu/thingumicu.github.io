@@ -1,2 +1,2 @@
 # thingumicu.github.io
-# How's it going? 
+ How's it going? 
