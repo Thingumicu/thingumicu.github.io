@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub Projects</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { text-decoration: none; color: blue; font-size: 18px; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
 
+    <h1>My GitHub Projects</h1>
+    <ul id="repo-list">Loading...</ul>
+
+    <script>
+        const username = "YOUR_GITHUB_USERNAME";  // Replace with your GitHub username
+        const repoList = document.getElementById("repo-list");
+
+        fetch(`https://api.github.com/users/${username}/repos`)
+            .then(response => response.json())
+            .then(data => {
+                repoList.innerHTML = ""; // Clear "Loading..."
+                data.forEach(repo => {
+                    let listItem = document.createElement("li");
+                    let link = document.createElement("a");
+                    link.href = repo.html_url;
+                    link.textContent = repo.name;
+                    link.target = "_blank";
+                    listItem.appendChild(link);
+                    repoList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                repoList.innerHTML = "Failed to load repositories.";
+                console.error("Error fetching repos:", error);
+            });
+    </script>
+
+</body>
+</html>
