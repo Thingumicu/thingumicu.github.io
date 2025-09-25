@@ -1,6 +1,6 @@
 # 🌐 My GitHub Pages Site
 
-![Version](https://img.shields.io/badge/version-7.0-blue?style=flat-square)  
+![Version](https://img.shields.io/badge/version-7.0-blue?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
 Welcome! This repository contains the source code for my personal GitHub Pages site showcasing my GitHub projects.
 
@@ -9,6 +9,8 @@ Welcome! This repository contains the source code for my personal GitHub Pages s
 Click the link below to view the live site:
 
 ➡️ [Open Website](https://thingumicu.github.io/)
+
+> Make sure your `index.html` is in the root of the repository and that GitHub Pages is enabled under your repo’s settings.
 
 ---
 
@@ -56,9 +58,26 @@ Click the link below to view the live site:
 
 ## 🗂️ Project Structure
 
-```plaintext
 .
-├── index.html       # Main landing page with all features
-├── README.md        # This file
-├── styles.css       # Optional, can separate CSS if preferred
-└── script.js        # Optional, can separate JavaScript if preferred
+├── index.html # Main landing page with all features
+├── README.md # This file
+├── LICENSE # MIT License with acknowledgment
+├── styles.css # Optional, can separate CSS if preferred
+└── script.js # Optional, can separate JavaScript if preferred
+
+
+---
+
+## ⚡ Next Planned Features
+- Add **tooltips on language badges** for full language names.
+- Smooth **fade in/out animation** when filtering/searching repositories.
+- Possibly **portfolio section** with personal projects outside GitHub.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).  
+
+**Acknowledgment:**  
+Some code and suggestions for enhancements to this project were provided with assistance from ChatGPT (OpenAI) during development.
