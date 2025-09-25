@@ -19,7 +19,6 @@
     overflow-x: hidden;
   }
 
-  /* Hero heading */
   h1 {
     font-weight: 700;
     font-size: 3rem;
@@ -28,41 +27,21 @@
     transform: translateY(-20px);
     animation: fadeDown 0.8s forwards;
   }
-  @keyframes fadeDown {
-    to { opacity:1; transform: translateY(0);}
-  }
+  @keyframes fadeDown { to { opacity:1; transform: translateY(0);} }
 
   .fade-in { opacity: 0; transform: translateY(15px); animation: fadeInUp 0.6s ease forwards; }
   @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
   /* Card hover */
-  .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .card:hover {
-    transform: translateY(-8px) rotateZ(0.5deg) scale(1.03);
-    box-shadow: 0 15px 25px rgba(0,0,0,0.25);
-  }
+  .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .card:hover { transform: translateY(-8px) rotateZ(0.5deg) scale(1.03); box-shadow: 0 15px 25px rgba(0,0,0,0.25); }
 
   /* Gradient buttons */
-  .btn-gradient {
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
-    color: #fff;
-    transition: background 0.3s;
-  }
-  .btn-gradient:hover {
-    background: linear-gradient(90deg, #2575fc, #6a11cb);
-    color: #fff;
-  }
+  .btn-gradient { background: linear-gradient(90deg, #6a11cb, #2575fc); color: #fff; transition: background 0.3s; }
+  .btn-gradient:hover { background: linear-gradient(90deg, #2575fc, #6a11cb); color: #fff; }
 
   /* Language badges */
-  .badge-lang {
-    font-size: 0.7rem;
-    padding: 0.3em 0.5em;
-    margin-right: 0.3rem;
-    border-radius: 0.25rem;
-    color: #fff;
-  }
+  .badge-lang { font-size: 0.7rem; padding: 0.3em 0.5em; margin-right: 0.3rem; border-radius: 0.25rem; color: #fff; }
   .badge-JavaScript { background-color: #f7df1e; color: #000; }
   .badge-Python { background-color: #3572A5; }
   .badge-HTML { background-color: #e34c26; }
@@ -78,32 +57,14 @@
   body.dark-mode .card .text-muted { color:#ccc; }
   body.dark-mode select, body.dark-mode input { background:#222; color:#fff; border-color:#444; }
 
-  /* Loading spinner overlay */
-  #loading { position: fixed; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; background: rgba(255,255,255,0.95); z-index:2000; }
-  body.dark-mode #loading { background: rgba(0,0,0,0.95); }
+  /* Skeleton loader cards */
+  .skeleton-card { height: 180px; border-radius: .5rem; background: linear-gradient(-90deg, #eee 0%, #ddd 50%, #eee 100%); background-size: 400% 400%; animation: pulse 1.2s ease-in-out infinite; }
+  body.dark-mode .skeleton-card { background: linear-gradient(-90deg, #222 0%, #333 50%, #222 100%); }
+  @keyframes pulse { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
   /* Back to Top */
-  #backToTop {
-    position: fixed; bottom:30px; right:30px; display:none;
-    z-index:1500; border-radius:50%; width:50px; height:50px;
-    font-size:1.5rem; justify-content:center; align-items:center;
-  }
+  #backToTop { position: fixed; bottom:30px; right:30px; display:none; z-index:1500; border-radius:50%; width:50px; height:50px; font-size:1.5rem; justify-content:center; align-items:center; }
 
-  /* Skeleton loader cards */
-  .skeleton-card {
-    height: 180px;
-    background: linear-gradient(-90deg, #eee 0%, #ddd 50%, #eee 100%);
-    background-size: 400% 400%;
-    animation: pulse 1.2s ease-in-out infinite;
-    border-radius: .5rem;
-  }
-  @keyframes pulse {
-    0% { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
-  }
-
-  /* Highlight search match */
-  .highlight { background-color: yellow; color:black; }
 </style>
 </head>
 <body>
@@ -131,13 +92,15 @@
     </select></div>
   </div>
 
-  <!-- Loading spinner -->
-  <div id="loading">
-    <div class="spinner-border text-primary" style="width:4rem; height:4rem;" role="status"><span class="visually-hidden">Loading...</span></div>
-  </div>
-
   <!-- Repo list -->
-  <div id="repo-list" class="row g-4 mt-3"></div>
+  <div id="repo-list" class="row g-4 mt-3">
+    <!-- Skeleton cards while loading -->
+    <div class="col-md-6 col-lg-4"><div class="skeleton-card"></div></div>
+    <div class="col-md-6 col-lg-4"><div class="skeleton-card"></div></div>
+    <div class="col-md-6 col-lg-4"><div class="skeleton-card"></div></div>
+    <div class="col-md-6 col-lg-4"><div class="skeleton-card"></div></div>
+    <div class="col-md-6 col-lg-4"><div class="skeleton-card"></div></div>
+  </div>
 </div>
 
 <!-- Back to Top Button -->
@@ -147,7 +110,6 @@
 <script>
 const username = "thingumicu";
 const repoList = document.getElementById("repo-list");
-const loading = document.getElementById("loading");
 const searchInput = document.getElementById("search");
 const languageFilter = document.getElementById("languageFilter");
 const sortFilter = document.getElementById("sortFilter");
@@ -157,7 +119,7 @@ const backToTop = document.getElementById("backToTop");
 let allRepos = [];
 
 // --- Dark Mode ---
-function setDarkMode(enabled) {
+function setDarkMode(enabled){
   if(enabled){
     document.body.classList.add("dark-mode");
     darkModeToggle.innerHTML='<i class="bi bi-sun-fill"></i>';
@@ -172,27 +134,25 @@ function setDarkMode(enabled) {
     localStorage.setItem("darkMode","false");
   }
 }
-
 if(localStorage.getItem("darkMode")==="true") setDarkMode(true);
 else if(localStorage.getItem("darkMode")==="false") setDarkMode(false);
 else if(window.matchMedia("(prefers-color-scheme: dark)").matches) setDarkMode(true);
-
-darkModeToggle.addEventListener("click", ()=>setDarkMode(!document.body.classList.contains("dark-mode")));
+darkModeToggle.addEventListener("click",()=>setDarkMode(!document.body.classList.contains("dark-mode")));
 
 // --- Fetch repos ---
 fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
 .then(r=>r.json())
 .then(data=>{
-  loading.style.display="none";
   allRepos=data;
   populateLanguageFilter(data);
   displayRepos(data);
 })
 .catch(err=>{
-  loading.innerHTML=`<p class="text-danger">⚠ Failed to load repositories.</p>`;
+  repoList.innerHTML=`<p class="text-danger">⚠ Failed to load repositories.</p>`;
   console.error(err);
 });
 
+// Populate language filter
 function populateLanguageFilter(repos){
   const languages=[...new Set(repos.map(r=>r.language).filter(Boolean))].sort();
   languages.forEach(lang=>{
@@ -202,6 +162,7 @@ function populateLanguageFilter(repos){
   });
 }
 
+// Display repos
 function displayRepos(repos){
   repoList.innerHTML="";
   repos.forEach((repo,index)=>{
@@ -209,13 +170,12 @@ function displayRepos(repos){
     col.className="col-md-6 col-lg-4 fade-in";
     col.style.animationDelay=`${index*0.05}s`;
 
-    const updated = new Date(repo.updated_at).toLocaleDateString();
+    const updated=new Date(repo.updated_at).toLocaleDateString();
+    const langClass=repo.language?`badge-${repo.language.replace(/\W/g,'')}`:"badge-Other";
+    const langBadge=`<span class="badge badge-lang ${langClass}">${repo.language||"N/A"}</span>`;
 
-    const langClass = repo.language ? `badge-${repo.language.replace(/\W/g,'')}` : "badge-Other";
-    const langBadge = `<span class="badge badge-lang ${langClass}">${repo.language||"N/A"}</span>`;
-
-    // highlight search
-    let nameHighlight = repo.name;
+    // Highlight search
+    let nameHighlight=repo.name;
     const q=searchInput.value.toLowerCase();
     if(q && repo.name.toLowerCase().includes(q)){
       const regex=new RegExp(q,"ig");
@@ -236,8 +196,7 @@ function displayRepos(repos){
           </ul>
           <a href="${repo.html_url}" target="_blank" class="btn btn-gradient mt-auto" title="View on GitHub"><i class="bi bi-github me-2"></i>GitHub</a>
         </div>
-      </div>
-    `;
+      </div>`;
     repoList.appendChild(col);
   });
 }
@@ -253,14 +212,13 @@ function filterRepos(){
   else filtered.sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at));
   displayRepos(filtered);
 }
-
 searchInput.addEventListener("input", filterRepos);
 languageFilter.addEventListener("change", filterRepos);
 sortFilter.addEventListener("change", filterRepos);
 
 // Back to Top
-window.addEventListener("scroll", ()=>{ backToTop.style.display=window.scrollY>300?"flex":"none"; });
-backToTop.addEventListener("click", ()=>{ window.scrollTo({top:0,behavior:"smooth"}); });
+window.addEventListener("scroll",()=>{backToTop.style.display=window.scrollY>300?"flex":"none";});
+backToTop.addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"});});
 </script>
 
 </body>
