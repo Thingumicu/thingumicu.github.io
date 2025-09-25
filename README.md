@@ -10,8 +10,6 @@ Click the link below to view the live site:
 
 ➡️ [Open Website](https://thingumicu.github.io/)
 
-> Make sure your `index.html` is in the root of the repository and that GitHub Pages is enabled under your repo’s settings.
-
 ---
 
 ## 📝 Iteration History & Changelog
