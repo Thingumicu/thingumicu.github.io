@@ -25,18 +25,7 @@
 <body>
 
   <div class="container text-center profile-header">
-    <img id="profilePic" class="profile-pic mb-3" src="default-pic.jpg" alt="Radu Voicu">
-
-<script>
-  fetch('https://your-project.vercel.app/api/fb-profile')
-    .then(res => res.json())
-    .then(data => {
-      if (data.url) {
-        document.getElementById('profilePic').src = data.url;
-      }
-    })
-    .catch(err => console.error('Failed to fetch Facebook profile picture:', err));
-</script>
+    <img src="https://avatars.githubusercontent.com/thingumicu" alt="Radu Voicu" class="profile-pic mb-3">
     <h1>Radu Voicu</h1>
     <p class="lead">Computer Science student, developer, anime & SF lover, volunteer at festivals.</p>
 
