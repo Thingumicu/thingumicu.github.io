@@ -18,19 +18,14 @@
       min-height: 100vh;
       transition: background 0.3s, color 0.3s;
     }
-    h1 {
-      font-weight: 700;
-    }
+    h1 { font-weight: 700; }
     .fade-in {
       opacity: 0;
       transform: translateY(15px);
       animation: fadeInUp 0.6s ease forwards;
     }
     @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      to { opacity: 1; transform: translateY(0); }
     }
     .card {
       transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s, color 0.3s;
@@ -40,24 +35,29 @@
       box-shadow: 0 10px 20px rgba(0,0,0,0.15);
     }
 
-    /* Dark mode */
+    /* Dark mode: true black bg + white text */
     body.dark-mode {
-      background: linear-gradient(135deg, #212529, #343a40);
-      color: #f8f9fa;
+      background: #000 !important;
+      color: #fff !important;
     }
     body.dark-mode .card {
-      background: #2c3034;
-      color: #f8f9fa;
+      background: #111 !important;
+      color: #fff !important;
+    }
+    body.dark-mode .card-text,
+    body.dark-mode .card-title,
+    body.dark-mode .list-inline-item {
+      color: #ddd !important;
     }
     body.dark-mode .form-control,
     body.dark-mode .form-select {
-      background: #343a40;
-      color: #f8f9fa;
-      border-color: #495057;
+      background: #111;
+      color: #fff;
+      border-color: #333;
     }
     body.dark-mode .btn-dark {
-      background: #f8f9fa;
-      color: #212529;
+      background: #fff;
+      color: #000;
     }
 
     /* Fullscreen loading overlay */
@@ -65,7 +65,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -73,7 +73,7 @@
       transition: opacity 0.3s ease, visibility 0.3s ease;
     }
     body.dark-mode #loadingOverlay {
-      background: rgba(33, 37, 41, 0.9);
+      background: rgba(0, 0, 0, 0.95);
     }
     #loadingOverlay.hidden {
       opacity: 0;
@@ -83,7 +83,7 @@
 </head>
 <body>
 
-  <!-- Navbar with Dark Mode Toggle -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg bg-light shadow-sm sticky-top">
     <div class="container">
       <a class="navbar-brand fw-bold" href="#">🚀 My GitHub Projects</a>
@@ -117,6 +117,11 @@
 
     <!-- Repo List -->
     <div id="repo-list" class="row g-4 mt-3"></div>
+
+    <!-- Pagination -->
+    <nav>
+      <ul class="pagination justify-content-center mt-4" id="pagination"></ul>
+    </nav>
   </div>
 
   <!-- Fullscreen Loading Overlay -->
@@ -137,8 +142,11 @@
     const languageFilter = document.getElementById("languageFilter");
     const sortFilter = document.getElementById("sortFilter");
     const darkModeToggle = document.getElementById("darkModeToggle");
+    const paginationEl = document.getElementById("pagination");
 
     let allRepos = [];
+    let currentPage = 1;
+    const perPage = 9;
 
     // --- Dark Mode ---
     function setDarkMode(enabled) {
@@ -152,122 +160,130 @@
         localStorage.setItem("darkMode", "false");
       }
     }
-    if (localStorage.getItem("darkMode") === "true") {
-      setDarkMode(true);
-    }
-    darkModeToggle.addEventListener("click", () => {
-      setDarkMode(!document.body.classList.contains("dark-mode"));
-    });
+    if (localStorage.getItem("darkMode") === "true") setDarkMode(true);
+    darkModeToggle.addEventListener("click", () => setDarkMode(!document.body.classList.contains("dark-mode")));
 
     // --- Fetch repos ---
     fetch(`https://api.github.com/users/${username}/repos?per_page=100`)
-      .then(response => response.json())
+      .then(r => r.json())
       .then(data => {
         loadingOverlay.classList.add("hidden");
         allRepos = data;
         populateLanguageFilter(data);
         filterAndDisplayRepos();
       })
-      .catch(error => {
+      .catch(err => {
         loadingOverlay.innerHTML = `<p class="text-danger">⚠ Failed to load repositories.</p>`;
-        console.error("Error fetching repos:", error);
+        console.error(err);
       });
 
     // Populate language filter
     function populateLanguageFilter(repos) {
-      const languages = [...new Set(repos.map(repo => repo.language).filter(Boolean))];
-      languages.sort();
+      const languages = [...new Set(repos.map(r => r.language).filter(Boolean))].sort();
       languages.forEach(lang => {
-        const option = document.createElement("option");
-        option.value = lang;
-        option.textContent = lang;
-        languageFilter.appendChild(option);
+        const opt = document.createElement("option");
+        opt.value = lang;
+        opt.textContent = lang;
+        languageFilter.appendChild(opt);
       });
     }
 
-    // Display repos
+    // Display repos (paginated)
     function displayRepos(repos) {
       repoList.innerHTML = "";
-      repos.forEach((repo, index) => {
+      const start = (currentPage - 1) * perPage;
+      const end = start + perPage;
+      const pageRepos = repos.slice(start, end);
+
+      pageRepos.forEach((repo, i) => {
         let col = document.createElement("div");
         col.className = "col-md-6 col-lg-4 fade-in";
-        col.style.animationDelay = `${index * 0.05}s`;
+        col.style.animationDelay = `${i * 0.05}s`;
 
         const updatedDate = new Date(repo.updated_at).toLocaleDateString();
 
         col.innerHTML = `
           <div class="card shadow-sm h-100">
             <div class="card-body d-flex flex-column">
-              <h5 class="card-title">
-                <i class="bi bi-folder2 me-2 text-primary"></i>${repo.name}
-              </h5>
-              <p class="card-text text-muted small">
-                ${repo.description || "No description available."}
-              </p>
-              <ul class="list-inline text-muted small mb-3">
+              <h5 class="card-title"><i class="bi bi-folder2 me-2 text-primary"></i>${repo.name}</h5>
+              <p class="card-text small">${repo.description || "No description available."}</p>
+              <ul class="list-inline small mb-3">
                 <li class="list-inline-item"><i class="bi bi-star-fill text-warning"></i> ${repo.stargazers_count}</li>
                 <li class="list-inline-item"><i class="bi bi-git text-danger"></i> ${repo.forks_count}</li>
                 <li class="list-inline-item"><i class="bi bi-eye text-info"></i> ${repo.watchers_count}</li>
                 <li class="list-inline-item"><i class="bi bi-code-slash text-success"></i> ${repo.language || "N/A"}</li>
-                <li class="list-inline-item"><i class="bi bi-clock"></i> Updated: ${updatedDate}</li>
+                <li class="list-inline-item"><i class="bi bi-clock"></i> ${updatedDate}</li>
               </ul>
-              <a href="${repo.html_url}" target="_blank" class="btn btn-dark mt-auto">
-                <i class="bi bi-github me-2"></i> View on GitHub
-              </a>
+              <a href="${repo.html_url}" target="_blank" class="btn btn-dark mt-auto"><i class="bi bi-github me-2"></i> View on GitHub</a>
             </div>
-          </div>
-        `;
+          </div>`;
         repoList.appendChild(col);
       });
 
-      if (repos.length === 0) {
-        repoList.innerHTML = `<p class="text-muted">No repositories match your search/filter.</p>`;
+      if (repos.length === 0) repoList.innerHTML = `<p class="text-muted">No repositories match your search/filter.</p>`;
+      renderPagination(repos.length);
+    }
+
+    // Pagination UI
+    function renderPagination(total) {
+      const totalPages = Math.ceil(total / perPage);
+      paginationEl.innerHTML = "";
+
+      if (totalPages <= 1) return;
+
+      const createPageItem = (label, page, disabled = false, active = false) => {
+        const li = document.createElement("li");
+        li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+        const a = document.createElement("a");
+        a.className = "page-link";
+        a.href = "#";
+        a.textContent = label;
+        a.addEventListener("click", e => {
+          e.preventDefault();
+          if (!disabled) { currentPage = page; filterAndDisplayRepos(); window.scrollTo({top:0,behavior:"smooth"}); }
+        });
+        li.appendChild(a);
+        return li;
+      };
+
+      paginationEl.appendChild(createPageItem("«", currentPage - 1, currentPage === 1));
+      for (let i = 1; i <= totalPages; i++) {
+        paginationEl.appendChild(createPageItem(i, i, false, currentPage === i));
       }
+      paginationEl.appendChild(createPageItem("»", currentPage + 1, currentPage === totalPages));
     }
 
     // Sort repos
     function sortRepos(repos, criterion) {
-      const sorted = [...repos];
+      const s = [...repos];
       switch (criterion) {
-        case "stars":
-          sorted.sort((a, b) => b.stargazers_count - a.stargazers_count);
-          break;
-        case "forks":
-          sorted.sort((a, b) => b.forks_count - a.forks_count);
-          break;
-        case "name":
-          sorted.sort((a, b) => a.name.localeCompare(b.name));
-          break;
+        case "stars": s.sort((a, b) => b.stargazers_count - a.stargazers_count); break;
+        case "forks": s.sort((a, b) => b.forks_count - a.forks_count); break;
+        case "name": s.sort((a, b) => a.name.localeCompare(b.name)); break;
         case "updated":
-        default:
-          sorted.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-          break;
+        default: s.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)); break;
       }
-      return sorted;
+      return s;
     }
 
     // Filter + Sort repos
     function filterAndDisplayRepos() {
-      const searchValue = searchInput.value.toLowerCase();
-      const selectedLang = languageFilter.value;
+      const q = searchInput.value.toLowerCase();
+      const lang = languageFilter.value;
       const sortBy = sortFilter.value;
 
-      let filtered = allRepos.filter(repo => {
-        const matchesSearch = repo.name.toLowerCase().includes(searchValue);
-        const matchesLang = selectedLang === "" || repo.language === selectedLang;
-        return matchesSearch && matchesLang;
-      });
+      let filtered = allRepos.filter(r => 
+        r.name.toLowerCase().includes(q) && (lang === "" || r.language === lang)
+      );
 
       filtered = sortRepos(filtered, sortBy);
-
       displayRepos(filtered);
     }
 
-    // Event listeners
-    searchInput.addEventListener("input", filterAndDisplayRepos);
-    languageFilter.addEventListener("change", filterAndDisplayRepos);
-    sortFilter.addEventListener("change", filterAndDisplayRepos);
+    // Listeners
+    searchInput.addEventListener("input", () => { currentPage = 1; filterAndDisplayRepos(); });
+    languageFilter.addEventListener("change", () => { currentPage = 1; filterAndDisplayRepos(); });
+    sortFilter.addEventListener("change", () => { currentPage = 1; filterAndDisplayRepos(); });
   </script>
-
 </body>
 </html>
