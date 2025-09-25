@@ -41,11 +41,13 @@
   .btn-gradient:hover { background: linear-gradient(90deg, #2575fc, #6a11cb); color: #fff; }
 
   /* Language badges */
-  .badge-lang { font-size: 0.7rem; padding: 0.3em 0.5em; margin-right: 0.3rem; border-radius: 0.25rem; color: #fff; }
+  .badge-lang { font-size: 0.7rem; padding: 0.3em 0.5em; margin-right: 0.3rem; border-radius: 0.25rem; display:inline-flex; align-items:center; gap:0.25em; }
   .badge-JavaScript { background-color: #f7df1e; color: #000; }
   .badge-Python { background-color: #3572A5; }
   .badge-HTML { background-color: #e34c26; }
   .badge-CSS { background-color: #264de4; }
+  .badge-PHP { background-color: #777bb3; color:#fff; }
+  .badge-CSharp { background-color: #178600; color:#fff; }
   .badge-Other { background-color: #6c757d; }
 
   /* Dark Mode */
@@ -64,7 +66,6 @@
 
   /* Back to Top */
   #backToTop { position: fixed; bottom:30px; right:30px; display:none; z-index:1500; border-radius:50%; width:50px; height:50px; font-size:1.5rem; justify-content:center; align-items:center; }
-
 </style>
 </head>
 <body>
@@ -162,6 +163,16 @@ function populateLanguageFilter(repos){
   });
 }
 
+// Language icons mapping
+const langIcons = {
+  "JavaScript": "⚡",
+  "Python": "🐍",
+  "HTML": "🌐",
+  "CSS": "🎨",
+  "PHP": "🐘",
+  "C#": "♯",
+};
+
 // Display repos
 function displayRepos(repos){
   repoList.innerHTML="";
@@ -170,19 +181,20 @@ function displayRepos(repos){
     col.className="col-md-6 col-lg-4 fade-in";
     col.style.animationDelay=`${index*0.05}s`;
 
-    const updated=new Date(repo.updated_at).toLocaleDateString();
-    const langClass=repo.language?`badge-${repo.language.replace(/\W/g,'')}`:"badge-Other";
-    const langBadge=`<span class="badge badge-lang ${langClass}">${repo.language||"N/A"}</span>`;
+    const updated = new Date(repo.updated_at).toLocaleDateString();
+    const icon = repo.language && langIcons[repo.language] ? langIcons[repo.language] : "💻";
+    const langClass = repo.language ? `badge-${repo.language.replace(/\W/g,'')}` : "badge-Other";
+    const langBadge = `<span class="badge badge-lang ${langClass}">${icon} ${repo.language||"N/A"}</span>`;
 
     // Highlight search
-    let nameHighlight=repo.name;
-    const q=searchInput.value.toLowerCase();
+    let nameHighlight = repo.name;
+    const q = searchInput.value.toLowerCase();
     if(q && repo.name.toLowerCase().includes(q)){
-      const regex=new RegExp(q,"ig");
-      nameHighlight=repo.name.replace(regex,m=>`<span class="highlight">${m}</span>`);
+      const regex = new RegExp(q,"ig");
+      nameHighlight = repo.name.replace(regex,m=>`<span class="highlight">${m}</span>`);
     }
 
-    col.innerHTML=`
+    col.innerHTML = `
       <div class="card shadow-sm h-100">
         <div class="card-body d-flex flex-column">
           <h5 class="card-title"><i class="bi bi-folder2 me-2 text-primary"></i>${nameHighlight}</h5>
