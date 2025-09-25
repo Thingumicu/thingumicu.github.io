@@ -16,10 +16,10 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #f8f9fa, #e9ecef);
       min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
     }
     h1 {
       font-weight: 700;
-      color: #212529;
     }
     .fade-in {
       opacity: 0;
@@ -33,18 +33,47 @@
       }
     }
     .card {
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s, color 0.3s;
     }
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 20px rgba(0,0,0,0.15);
     }
+
+    /* Dark mode */
+    body.dark-mode {
+      background: linear-gradient(135deg, #212529, #343a40);
+      color: #f8f9fa;
+    }
+    body.dark-mode .card {
+      background: #2c3034;
+      color: #f8f9fa;
+    }
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+      background: #343a40;
+      color: #f8f9fa;
+      border-color: #495057;
+    }
+    body.dark-mode .btn-dark {
+      background: #f8f9fa;
+      color: #212529;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Navbar with Dark Mode Toggle -->
+  <nav class="navbar navbar-expand-lg bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">🚀 My GitHub Projects</a>
+      <button id="darkModeToggle" class="btn btn-outline-dark">
+        <i class="bi bi-moon-fill"></i>
+      </button>
+    </div>
+  </nav>
+
   <div class="container py-5">
-    <h1 class="mb-4 text-center">🚀 My GitHub Projects</h1>
 
     <!-- Search + Filter -->
     <div class="row mb-4">
@@ -78,10 +107,33 @@
     const loading = document.getElementById("loading");
     const searchInput = document.getElementById("search");
     const languageFilter = document.getElementById("languageFilter");
+    const darkModeToggle = document.getElementById("darkModeToggle");
 
     let allRepos = [];
 
-    // Fetch repos
+    // --- Dark Mode ---
+    function setDarkMode(enabled) {
+      if (enabled) {
+        document.body.classList.add("dark-mode");
+        darkModeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+        localStorage.setItem("darkMode", "true");
+      } else {
+        document.body.classList.remove("dark-mode");
+        darkModeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
+        localStorage.setItem("darkMode", "false");
+      }
+    }
+
+    // Load dark mode preference
+    if (localStorage.getItem("darkMode") === "true") {
+      setDarkMode(true);
+    }
+
+    darkModeToggle.addEventListener("click", () => {
+      setDarkMode(!document.body.classList.contains("dark-mode"));
+    });
+
+    // --- Fetch repos ---
     fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
       .then(response => response.json())
       .then(data => {
