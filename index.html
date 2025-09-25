@@ -59,12 +59,32 @@
       background: #f8f9fa;
       color: #212529;
     }
+
+    /* Fullscreen loading overlay */
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    body.dark-mode #loadingOverlay {
+      background: rgba(33, 37, 41, 0.9);
+    }
+    #loadingOverlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
   </style>
 </head>
 <body>
 
   <!-- Navbar with Dark Mode Toggle -->
-  <nav class="navbar navbar-expand-lg bg-light shadow-sm">
+  <nav class="navbar navbar-expand-lg bg-light shadow-sm sticky-top">
     <div class="container">
       <a class="navbar-brand fw-bold" href="#">🚀 My GitHub Projects</a>
       <button id="darkModeToggle" class="btn btn-outline-dark">
@@ -73,10 +93,10 @@
     </div>
   </nav>
 
-  <div class="container py-5">
+  <div class="container py-4">
 
     <!-- Search + Filter + Sort -->
-    <div class="row mb-4 g-2">
+    <div class="row mb-4 g-2 sticky-top bg-body py-3 shadow-sm rounded" style="top: 70px; z-index: 1020;">
       <div class="col-md-5">
         <input type="text" id="search" class="form-control" placeholder="🔍 Search repositories...">
       </div>
@@ -95,15 +115,15 @@
       </div>
     </div>
 
-    <!-- Loading Spinner -->
-    <div id="loading" class="d-flex justify-content-center my-5">
-      <div class="spinner-border text-primary" role="status" style="width:3rem; height:3rem;">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
-
     <!-- Repo List -->
-    <div id="repo-list" class="row g-4"></div>
+    <div id="repo-list" class="row g-4 mt-3"></div>
+  </div>
+
+  <!-- Fullscreen Loading Overlay -->
+  <div id="loadingOverlay">
+    <div class="spinner-border text-primary" role="status" style="width:4rem; height:4rem;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
 
   <!-- Bootstrap JS -->
@@ -112,7 +132,7 @@
   <script>
     const username = "thingumicu"; // Your GitHub username
     const repoList = document.getElementById("repo-list");
-    const loading = document.getElementById("loading");
+    const loadingOverlay = document.getElementById("loadingOverlay");
     const searchInput = document.getElementById("search");
     const languageFilter = document.getElementById("languageFilter");
     const sortFilter = document.getElementById("sortFilter");
@@ -143,13 +163,13 @@
     fetch(`https://api.github.com/users/${username}/repos?per_page=100`)
       .then(response => response.json())
       .then(data => {
-        loading.style.display = "none";
+        loadingOverlay.classList.add("hidden");
         allRepos = data;
         populateLanguageFilter(data);
         filterAndDisplayRepos();
       })
       .catch(error => {
-        loading.innerHTML = `<p class="text-danger">⚠ Failed to load repositories.</p>`;
+        loadingOverlay.innerHTML = `<p class="text-danger">⚠ Failed to load repositories.</p>`;
         console.error("Error fetching repos:", error);
       });
 
