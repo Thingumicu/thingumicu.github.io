@@ -75,14 +75,22 @@
 
   <div class="container py-5">
 
-    <!-- Search + Filter -->
-    <div class="row mb-4">
-      <div class="col-md-8 mb-2">
+    <!-- Search + Filter + Sort -->
+    <div class="row mb-4 g-2">
+      <div class="col-md-5">
         <input type="text" id="search" class="form-control" placeholder="🔍 Search repositories...">
       </div>
-      <div class="col-md-4 mb-2">
+      <div class="col-md-4">
         <select id="languageFilter" class="form-select">
           <option value="">🌐 All Languages</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select id="sortFilter" class="form-select">
+          <option value="updated">📅 Last Updated</option>
+          <option value="stars">⭐ Stars</option>
+          <option value="forks">🍴 Forks</option>
+          <option value="name">🔤 Name</option>
         </select>
       </div>
     </div>
@@ -107,6 +115,7 @@
     const loading = document.getElementById("loading");
     const searchInput = document.getElementById("search");
     const languageFilter = document.getElementById("languageFilter");
+    const sortFilter = document.getElementById("sortFilter");
     const darkModeToggle = document.getElementById("darkModeToggle");
 
     let allRepos = [];
@@ -123,24 +132,21 @@
         localStorage.setItem("darkMode", "false");
       }
     }
-
-    // Load dark mode preference
     if (localStorage.getItem("darkMode") === "true") {
       setDarkMode(true);
     }
-
     darkModeToggle.addEventListener("click", () => {
       setDarkMode(!document.body.classList.contains("dark-mode"));
     });
 
     // --- Fetch repos ---
-    fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
+    fetch(`https://api.github.com/users/${username}/repos?per_page=100`)
       .then(response => response.json())
       .then(data => {
         loading.style.display = "none";
         allRepos = data;
         populateLanguageFilter(data);
-        displayRepos(data);
+        filterAndDisplayRepos();
       })
       .catch(error => {
         loading.innerHTML = `<p class="text-danger">⚠ Failed to load repositories.</p>`;
@@ -199,21 +205,48 @@
       }
     }
 
-    // Filter repos
-    function filterRepos() {
+    // Sort repos
+    function sortRepos(repos, criterion) {
+      const sorted = [...repos];
+      switch (criterion) {
+        case "stars":
+          sorted.sort((a, b) => b.stargazers_count - a.stargazers_count);
+          break;
+        case "forks":
+          sorted.sort((a, b) => b.forks_count - a.forks_count);
+          break;
+        case "name":
+          sorted.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case "updated":
+        default:
+          sorted.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+          break;
+      }
+      return sorted;
+    }
+
+    // Filter + Sort repos
+    function filterAndDisplayRepos() {
       const searchValue = searchInput.value.toLowerCase();
       const selectedLang = languageFilter.value;
-      const filtered = allRepos.filter(repo => {
+      const sortBy = sortFilter.value;
+
+      let filtered = allRepos.filter(repo => {
         const matchesSearch = repo.name.toLowerCase().includes(searchValue);
         const matchesLang = selectedLang === "" || repo.language === selectedLang;
         return matchesSearch && matchesLang;
       });
+
+      filtered = sortRepos(filtered, sortBy);
+
       displayRepos(filtered);
     }
 
     // Event listeners
-    searchInput.addEventListener("input", filterRepos);
-    languageFilter.addEventListener("change", filterRepos);
+    searchInput.addEventListener("input", filterAndDisplayRepos);
+    languageFilter.addEventListener("change", filterAndDisplayRepos);
+    sortFilter.addEventListener("change", filterAndDisplayRepos);
   </script>
 
 </body>
