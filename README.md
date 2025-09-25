@@ -56,18 +56,6 @@ Click the link below to view the live site:
 
 ---
 
-## 🗂️ Project Structure
-
-.
-├── index.html # Main landing page with all features
-├── README.md # This file
-├── LICENSE # MIT License with acknowledgment
-├── styles.css # Optional, can separate CSS if preferred
-└── script.js # Optional, can separate JavaScript if preferred
-
-
----
-
 ## ⚡ Next Planned Features
 - Add **tooltips on language badges** for full language names.
 - Smooth **fade in/out animation** when filtering/searching repositories.
